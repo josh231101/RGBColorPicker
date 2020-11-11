@@ -17,22 +17,32 @@ def callWeatherApi(city):
 layout = [
             [sg.Text(text="Write the city: "), sg.InputText(text_color="red")],
             [sg.Button(button_text="Search"),sg.Button(button_text="Exit")],
-            [sg.Image(r'C:\Users\Miguel\Desktop\homero.png')]
+            [sg.Text(key="_CITY_", size=(20,1),text_color="Red",text="",auto_size_text=False)],
+                [sg.Text(key="_MAIN_", text="", size=(50,1))],
+                [sg.Text(key="_DESCRIPTION_", text="", size=(50,1))],
+                [sg.Image(key="_IMAGE_")],
+                [sg.Text(key="_TEMPERATURE_", text="", size=(50,1))]
+
           ]
 
 window = sg.Window('Forecast Weather', layout, no_titlebar=True, grab_anywhere=True)
+
 
 while True:
     event, values = window.read()
     if event == "Exit" or sg.WIN_CLOSED:
         break
-
-    cityInfo = callWeatherApi(values[0])
-    print(cityInfo)
-    print(cityInfo['name'])
-    print(cityInfo['weather'][0]['main'])
-    print(cityInfo['weather'][0]['description'])
-    print(cityInfo['weather'][0]['icon'])
+    elif event == "Search":
+        cityInfo = callWeatherApi(values[0])
+        city = cityInfo['name']
+        main = cityInfo['weather'][0]['main']
+        description = cityInfo['weather'][0]['description']
+        icon = cityInfo['weather'][0]['icon']
+        print(icon)
+        window["_CITY_"].update(city)
+        window['_MAIN_'].update(main)
+        window['_DESCRIPTION_'].update(description)
+        window["_IMAGE_"].update(rf'C:\Users\Miguel\PycharmProjects\preparcial\Project\Icons\{icon}.png')
 
 
 window.close()
