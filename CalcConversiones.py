@@ -1,7 +1,6 @@
 import PySimpleGUI as sg
 
 # .:FUNCTIONS:.
-
 # Conversions Functions
 def convert_LONGITUD(value, option):
     # We use ternary operator because there are always only 2 options
@@ -87,7 +86,6 @@ def main():
                 win2.close()
                 win1.UnHide()
                 break
-
             resultado=""
             try:
                 # Getting the user value and option to convert.
