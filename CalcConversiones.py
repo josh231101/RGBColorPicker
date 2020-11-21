@@ -13,6 +13,15 @@ def convert_MASA(value, option):
 def convert_VOLUMEN(value, option):
     return value * 3.785 if option == "Galón a litros" else value / 3.785
 
+def calcResultado(event,value,conversion):
+    # EXTRA VALIDATION VALUE: OUGHT TO BE POSITIVE AND DIFFERENT FROM 0
+    if value <=0:
+        return "Ingresa un número positivo y diferente de 0"
+    # Call the option according to user option to convert.
+    result_converted = calc_info[event]["CONVERSION"](value, conversion)
+    result_converted = round(result_converted, 4)
+    return  f"{value} {conversion} son {result_converted}"
+
 # Layouts functions
 def createMainLayout():
     layout = [
@@ -79,18 +88,16 @@ def main():
                 win1.UnHide()
                 break
 
+            resultado=""
             try:
                 # Getting the user value and option to convert.
                 value = float(val2["_VALUE_"])
                 conversion = val2["_CONVERSION_"]
-                # Call the option according to user option to convert.
-                result = calc_info[ev1]["CONVERSION"](value, conversion)
-                result = round(result, 4)
-                sg.popup(result)
+                resultado = calcResultado(ev1,value,conversion)
             except:
                 # VALIDATION: The user pass none,not a number,letters,symbols,etc.
-                sg.popup("No ingresaste un valor entero o ingresaste un campo vacío", "Intenta de nuevo")
-
+                resultado = "Ingresaste un número invalido o dejaste el campo vacío. Intenta de nuevo"
+            sg.popup(resultado)
     # Main window gets closed
     win1.close()
 
