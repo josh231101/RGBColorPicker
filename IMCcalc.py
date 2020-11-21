@@ -29,6 +29,6 @@ while True:
             imc = calc_imc(p,h)
             sg.popup(f"IMC={imc}")
         except:
-            sg.popup_ok("No ingresaste numeros")
+            sg.popup_ok("No ingresaste numeros o te falta un campo")
 
 window.close()
