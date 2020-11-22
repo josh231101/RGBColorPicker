@@ -1,11 +1,5 @@
 import PySimpleGUI as sg
 
-CALC_INFO = {
-    "LONGITUD": ("Metros", "Yardas"),
-    "MASA": ("Libras", "Gramos"),
-    "VOLUMEN": ("Galón", "Litros")
-}
-
 def calcularConversion(magnitud, mg1, mg2, entrada):
     if magnitud == "LONGITUD":
         # In case we convert Meters to Yd we use the formula, else means it's inverted so we use the inverted formula
@@ -36,9 +30,16 @@ def validateInput(entrada, combo_1, combo_2):
     else:
         return "Ingresa todos los campos!"
 
+# Create info for the combos
+CALC_INFO = {
+    "LONGITUD": ("Metros", "Yardas"),
+    "MASA": ("Libras", "Gramos"),
+    "VOLUMEN": ("Galón", "Litros")
+}
+
 def main():
     sg.theme("Topanga")
-
+    # Create layout
     layout = [
         [sg.Text("MAGNITUD A CALCULAR: ")],
         [sg.Combo(("LONGITUD", "MASA", "VOLUMEN"), default_value="LONGITUD", size=(20, 4), key="_MAGNITUD_"),
@@ -52,21 +53,21 @@ def main():
 
     while True:
         event, values = window.read()
-        if event == sg.WIN_CLOSED:
+        if event == sg.WIN_CLOSED:  # User clicked X btn
             break
-        elif event == "CAMBIAR":
+        elif event == "CAMBIAR":    # User wants to change magnitude
             # Get the user magnitude to calculate
             magnitudes = CALC_INFO[values["_MAGNITUD_"]]
-            # Clean the screen and combobox info
+            # Clean the screen and update combobox info to the corresponding magnitude
             cleanAndUpdateMagnitudes(window, magnitudes)
         elif event == "CALCULAR":
             entrada = values["_ENTRADA_"]
-            mg_1 = values["_FIRSTC_"]
-            mg_2 = values["_SECONDC_"]
+            mg_1 = values["_FIRSTC_"] # The first magnitude (from)
+            mg_2 = values["_SECONDC_"] # The second magnitude(to)
             # VALIDATE USER INPUT
-            if validateInput(entrada, mg_1, mg_2) == True:
+            if validateInput(entrada, mg_1, mg_2) == True:  # Validate the user form
                 current_magnitude = values["_MAGNITUD_"]
-                entrada = float(entrada)
+                entrada = float(entrada)    # Convert to float the input to calculate the conversion
                 resultado = calcularConversion(current_magnitude, mg_1, mg_2,entrada)
                 salida = f"Al convertir {entrada} de {mg_1} a {mg_2} obtenemos {resultado}"
             else:
