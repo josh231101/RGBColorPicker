@@ -6,47 +6,46 @@ CALC_INFO = {
     "VOLUMEN": ("Galón", "Litros")
 }
 
-
 def calcularConversion(magnitud, mg1, mg2, entrada):
     if magnitud == "LONGITUD":
-        if mg1 == "Metros" and mg2 == "Yardas":
-            return entrada * 0.914
-        elif mg1 == "Yardas" and mg2 == "Metros":
-            return entrada / 0.914
-        else:
-            return entrada
+        # In case we convert Meters to Yd we use the formula, else means it's inverted so we use the inverted formula
+        return entrada * 0.914 if mg1 == "Metros" and mg2 == "Yardas" else entrada / 0.914
     elif magnitud == "MASA":
-        if mg1 == "Libras" and mg2 == "Gramos":
-            return entrada * 453.6
-        elif mg1 == "Gramos" and mg2 == "Libras":
-            return entrada / 453.6
-        else:
-            return entrada
+        return entrada * 453.6 if mg1 == "Libras" and mg2 == "Gramos" else entrada / 463.6
     elif magnitud == "VOLUMEN":
-        if mg1 == "Litros" and mg2 == "Galón":
-            return entrada / 3.785
-        elif mg1 == "Galón" and mg2 == "Litros":
-            return entrada * 3.785
+        return entrada / 3.785 if mg1 == "Litros" and mg2 == "Galon" else entrada * 3.785
 
-
-def cleanMagnitudes(window, magnitudes):
+def cleanAndUpdateMagnitudes(window, magnitudes):
+    window["_ENTRADA_"].update("")
     window["_FIRSTC_"].Update("")
     window["_SECONDC_"].update("")
     window["_FIRSTC_"].Update(values=magnitudes)
     window["_SECONDC_"].update(values=magnitudes)
-    window["_ENTRADA_"].update("")
 
+def validateInput(entrada, combo_1, combo_2):
+    if entrada != "" and combo_1 != "" and combo_2 != "":
+        try:
+            # If user sends leters and invalid characters we send the user to the exception
+            entrada = float(entrada)
+            if combo_1 != combo_2:
+                return True if entrada > 0 else "Ingresa por favor un número positivo mayor a cero"
+            else:
+                return "Ingresaste las mismas magnitudes"
+        except ValueError:
+            return "Ingresa un número entero"
+    else:
+        return "Ingresa todos los campos!"
 
 def main():
     sg.theme("Topanga")
 
     layout = [
-        [sg.Text("MAGNITUD")],
+        [sg.Text("MAGNITUD A CALCULAR: ")],
         [sg.Combo(("LONGITUD", "MASA", "VOLUMEN"), default_value="LONGITUD", size=(20, 4), key="_MAGNITUD_"),
          sg.Button("CAMBIAR")],
         [sg.T("Cantidad a convertir: ")],
         [sg.Input(key="_ENTRADA_")],
-        [sg.Combo(["Metros", "Yardas"], key="_FIRSTC_"), sg.T("a"), sg.Combo(CALC_INFO["LONGITUD"], key="_SECONDC_")],
+        [sg.Combo(CALC_INFO["LONGITUD"], key="_FIRSTC_"), sg.T("a"), sg.Combo(CALC_INFO["LONGITUD"], key="_SECONDC_")],
         [sg.Button("CALCULAR")]
     ]
     window = sg.Window("CALCULADORA DE CONVERSIONES", layout)
@@ -59,27 +58,20 @@ def main():
             # Get the user magnitude to calculate
             magnitudes = CALC_INFO[values["_MAGNITUD_"]]
             # Clean the screen and combobox info
-            cleanMagnitudes(window, magnitudes)
+            cleanAndUpdateMagnitudes(window, magnitudes)
         elif event == "CALCULAR":
-            salida = ""
-            try:
-                entrada = float(values["_ENTRADA_"])
-                print(entrada)
-                current_magnitud = values["_MAGNITUD_"]
-                mg1 = values["_FIRSTC_"]
-                mg2 = values["_SECONDC_"]
-                print(mg1, mg2)
-                print(current_magnitud)
-                resultado = calcularConversion(current_magnitud, mg1, mg2, entrada)
-                salida = f"{entrada}, {mg1} a {mg2} son {resultado}"
-            except:
-                salida="Ingresaste un campo vacío o un número no válido. Intenta de nuevo."
-
+            entrada = values["_ENTRADA_"]
+            mg_1 = values["_FIRSTC_"]
+            mg_2 = values["_SECONDC_"]
+            # VALIDATE USER INPUT
+            if validateInput(entrada, mg_1, mg_2) == True:
+                current_magnitude = values["_MAGNITUD_"]
+                entrada = float(entrada)
+                resultado = calcularConversion(current_magnitude, mg_1, mg_2,entrada)
+                salida = f"Al convertir {entrada} de {mg_1} a {mg_2} obtenemos {resultado}"
+            else:
+                salida = validateInput(entrada, mg_1, mg_2)
             sg.popup_ok(salida)
 
-        else:
-            continue
     window.close()
-
-
 main()
