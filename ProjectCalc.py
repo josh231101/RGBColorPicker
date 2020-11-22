@@ -7,21 +7,21 @@ def calcularConversion(magnitud, mg1, mg2, entrada):
     elif magnitud == "MASA":
         return entrada * 453.6 if mg1 == "Libras" and mg2 == "Gramos" else entrada / 463.6
     elif magnitud == "VOLUMEN":
-        return entrada / 3.785 if mg1 == "Litros" and mg2 == "Galon" else entrada * 3.785
+        return entrada / 3.785 if mg1 == "Litros" and mg2 == "Galón" else entrada * 3.785
 
-def cleanAndUpdateMagnitudes(window, magnitudes):
+def cleanAndUpdateMagnitude(window, magnitudes):
     window["_ENTRADA_"].update("")
-    window["_FIRSTC_"].Update("")
-    window["_SECONDC_"].update("")
-    window["_FIRSTC_"].Update(values=magnitudes)
-    window["_SECONDC_"].update(values=magnitudes)
+    window["_UNIT1_"].Update("")
+    window["_UNIT2_"].update("")
+    window["_UNIT1_"].Update(values=magnitudes)
+    window["_UNIT2_"].update(values=magnitudes)
 
 def validateInput(entrada, combo_1, combo_2):
-    if entrada != "" and combo_1 != "" and combo_2 != "":
+    if entrada != "" and combo_1 != "" and combo_2 != "":   # Both units and input are filled
         try:
-            # If user sends leters and invalid characters we send the user to the exception
+            # If user sends letters and invalid characters we send the user to the exception
             entrada = float(entrada)
-            if combo_1 != combo_2:
+            if combo_1 != combo_2:  # User must choose different units
                 return True if entrada > 0 else "Ingresa por favor un número positivo mayor a cero"
             else:
                 return "Ingresaste las mismas magnitudes"
@@ -46,7 +46,7 @@ def main():
          sg.Button("CAMBIAR")],
         [sg.T("Cantidad a convertir: ")],
         [sg.Input(key="_ENTRADA_")],
-        [sg.Combo(CALC_INFO["LONGITUD"], key="_FIRSTC_"), sg.T("a"), sg.Combo(CALC_INFO["LONGITUD"], key="_SECONDC_")],
+        [sg.Combo(CALC_INFO["LONGITUD"], key="_UNIT1_"), sg.T("a"), sg.Combo(CALC_INFO["LONGITUD"], key="_UNIT2_")],
         [sg.Button("CALCULAR")]
     ]
     window = sg.Window("CALCULADORA DE CONVERSIONES", layout)
@@ -57,21 +57,21 @@ def main():
             break
         elif event == "CAMBIAR":    # User wants to change magnitude
             # Get the user magnitude to calculate
-            magnitudes = CALC_INFO[values["_MAGNITUD_"]]
-            # Clean the screen and update combobox info to the corresponding magnitude
-            cleanAndUpdateMagnitudes(window, magnitudes)
+            magnitude = CALC_INFO[values["_MAGNITUD_"]]
+            # Clean the screen and update combobox info to the corresponding magnitude units
+            cleanAndUpdateMagnitude(window, magnitude)
         elif event == "CALCULAR":
             entrada = values["_ENTRADA_"]
-            mg_1 = values["_FIRSTC_"] # The first magnitude (from)
-            mg_2 = values["_SECONDC_"] # The second magnitude(to)
+            unit_1 = values["_UNIT1_"] # The first unit (from)
+            unit_2 = values["_UNIT2_"] # The second unit(to)
             # VALIDATE USER INPUT
-            if validateInput(entrada, mg_1, mg_2) == True:  # Validate the user form
+            if validateInput(entrada, unit_1, unit_2) == True:  # Validate the user form
                 current_magnitude = values["_MAGNITUD_"]
                 entrada = float(entrada)    # Convert to float the input to calculate the conversion
-                resultado = calcularConversion(current_magnitude, mg_1, mg_2,entrada)
-                salida = f"Al convertir {entrada} de {mg_1} a {mg_2} obtenemos {resultado}"
+                resultado = calcularConversion(current_magnitude, unit_1, unit_2,entrada)
+                salida = f"Al convertir {entrada}, de {unit_1} a {unit_2} obtenemos {resultado}"
             else:
-                salida = validateInput(entrada, mg_1, mg_2)
+                salida = validateInput(entrada, unit_1, unit_2)
             sg.popup_ok(salida)
 
     window.close()
