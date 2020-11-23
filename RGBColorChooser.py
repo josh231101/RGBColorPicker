@@ -1,7 +1,7 @@
 import PySimpleGUI as sg
 
 
-
+# Obtenido de Dietrich Epp
 def rgb2hex(rgb):
     return '%02x%02x%02x' % rgb
 
